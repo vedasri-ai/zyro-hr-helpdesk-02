@@ -10,12 +10,6 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_groq import ChatGroq
 
-import streamlit as st
-import os
-
-st.write("Current Directory:", os.getcwd())
-st.write("Files:", os.listdir("."))
-
 @st.cache_resource
 def init_bot():
 
