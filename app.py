@@ -1,4 +1,4 @@
-app_code = """
+
 import streamlit as st
 
 st.set_page_config(
@@ -45,9 +45,3 @@ if question:
             "content": answer
         }
     )
-"""
-
-with open("app.py", "w") as f:
-    f.write(app_code)
-
-print("app.py created")
