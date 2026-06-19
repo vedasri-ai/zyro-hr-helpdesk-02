@@ -1,82 +1,53 @@
+app_code = """
 import streamlit as st
-import os
 
-from langchain_community.document_loaders import PyPDFDirectoryLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
-from langchain_groq import ChatGroq
+st.set_page_config(
+    page_title="Zyro HR Help Desk",
+    page_icon="💼",
+    layout="wide"
+)
 
-import streamlit as st
-import os
+st.title("💼 Zyro Dynamics HR Help Desk")
 
-st.write("Current Directory:", os.getcwd())
-st.write("Files:", os.listdir("."))
+st.markdown(
+    "Ask questions about company policies, leave, benefits, probation, travel, and more."
+)
 
-@st.cache_resource
-def init_bot():
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-    import os
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
-    CORPUS_PATH = "."
+question = st.chat_input("Ask an HR question...")
 
-    if not os.path.exists(CORPUS_PATH):
-        st.error(
-            f"Folder '{CORPUS_PATH}' not found.\n\n"
-            "Create an hr_docs folder in your GitHub repository and upload your HR PDF files."
-        )
-        st.stop()
-        loader = PyPDFDirectoryLoader(".")
-        documents = loader.load()
+if question:
 
-        st.write("Documents loaded:", len(documents))
-
-        if len(documents) == 0:
-            st.error("No PDF files found!")
-            st.stop()
-
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=512,
-        chunk_overlap=100,
-        length_function=len,
-        separators=["\n\n", "\n", ". ", " ", ""]
-    )
-
-    chunks = splitter.split_documents(documents)
-
-    st.write("Chunks created:", len(chunks))
-
-    if len(chunks) == 0:
-        st.error("No chunks created!")
-        st.stop()
-
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-mpnet-base-v2",
-        model_kwargs={"device": "cpu"},
-        encode_kwargs={"normalize_embeddings": True}
-    )
-
-    vectorstore = FAISS.from_documents(
-        documents=chunks,
-        embedding=embeddings
-    )
-
-    retriever = vectorstore.as_retriever(
-        search_type="mmr",
-        search_kwargs={
-            "k": 6,
-            "fetch_k": 30,
-            "lambda_mult": 0.5
+    st.session_state.messages.append(
+        {
+            "role": "user",
+            "content": question
         }
     )
 
-    llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
-        temperature=0,
-        max_tokens=1024
-    )
+    with st.chat_message("user"):
+        st.write(question)
 
-    return retriever, llm
+    answer = "Backend RAG response goes here"
+
+    with st.chat_message("assistant"):
+        st.write(answer)
+
+    st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": answer
+        }
+    )
+"""
+
+with open("app.py", "w") as f:
+    f.write(app_code)
+
+print("app.py created")
