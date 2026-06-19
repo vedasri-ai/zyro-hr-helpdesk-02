@@ -21,7 +21,7 @@ def init_bot():
 
     import os
 
-    CORPUS_PATH = "hr_docs"
+    CORPUS_PATH = "."
 
     if not os.path.exists(CORPUS_PATH):
         st.error(
@@ -29,17 +29,14 @@ def init_bot():
             "Create an hr_docs folder in your GitHub repository and upload your HR PDF files."
         )
         st.stop()
+        loader = PyPDFDirectoryLoader(".")
+        documents = loader.load()
 
-    loader = PyPDFDirectoryLoader(CORPUS_PATH)
-    documents = loader.load()
+        st.write("Documents loaded:", len(documents))
 
-    st.sidebar.success(f"Documents Loaded: {len(documents)}")
-
-    if len(documents) == 0:
-        st.error(
-            "No PDF documents found in hr_docs folder."
-        )
-        st.stop()
+        if len(documents) == 0:
+            st.error("No PDF files found!")
+            st.stop()
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=512,
@@ -50,12 +47,10 @@ def init_bot():
 
     chunks = splitter.split_documents(documents)
 
-    st.sidebar.success(f"Chunks Created: {len(chunks)}")
+    st.write("Chunks created:", len(chunks))
 
     if len(chunks) == 0:
-        st.error(
-            "Documents loaded but no chunks were created."
-        )
+        st.error("No chunks created!")
         st.stop()
 
     embeddings = HuggingFaceEmbeddings(
@@ -79,7 +74,7 @@ def init_bot():
     )
 
     llm = ChatGroq(
-        model="llama3-70b-8192",
+        model="llama-3.3-70b-versatile",
         temperature=0,
         max_tokens=1024
     )
