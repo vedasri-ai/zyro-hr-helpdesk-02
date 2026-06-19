@@ -1,3 +1,14 @@
+import streamlit as st
+import sys
+
+st.write("Python:", sys.version)
+
+try:
+    import langchain_community
+    st.success("langchain_community installed")
+except Exception as e:
+    st.error(str(e))
+
 
 import streamlit as st
 from langchain_community.document_loaders import PyPDFDirectoryLoader
