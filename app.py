@@ -1,3 +1,21 @@
+import streamlit as st
+import os
+
+from langchain_community.document_loaders import PyPDFDirectoryLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_groq import ChatGroq
+
+import streamlit as st
+import os
+
+st.write("Current Directory:", os.getcwd())
+st.write("Files:", os.listdir("."))
+
 @st.cache_resource
 def init_bot():
 
